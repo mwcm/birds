@@ -41,7 +41,7 @@ function dontCollide(boid, boids) {
 	var d = new THREE.Vector3()
 	boids.forEach(function(currentBoid, index) {
 		if (currentBoid !== boid) {
-			if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 16) {
+			if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 16) {  // should be based on boid geometry size
 				d.subVectors(currentBoid.mesh.position, boid.mesh.position)
 				c.sub(d)
 			}
