@@ -27,7 +27,7 @@ var Boid = function () {
 function calculateCenter(boid, boids) {
 	var c = new THREE.Vector3();
 	boids.forEach(function(currentBoid, index) {
-		if (currentBoid != boid) {
+		if (currentBoid !== boid) {
 			c.add(currentBoid.mesh.position);
 		}
 	})
@@ -38,9 +38,16 @@ function calculateCenter(boid, boids) {
 
 function dontCollide(boid, boids) {
 	var c = new THREE.Vector3()
+	var d = new THREE.Vector3()
 	boids.forEach(function(currentBoid, index) {
-		if ()
+		if (currentBoid !== boid) {
+			if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 16) {
+				d.subVectors(currentBoid.mesh.position, boid.mesh.position)
+				c.sub(d)
+			}
+		}
 	})
+	return c
 }
 
 function drawBoid() {
@@ -68,7 +75,9 @@ function flyTowardsCentre(boid, boids) {
 function move() {
 	boids.forEach(function(boid, index) {
 		v1 = flyTowardsCentre(boid, boids)
+		v2 = dontCollide(boid, boids)
 		boid.velocity = boid.velocity.add(v1)
+		boid.velocity = boid.velocity.add(v2)
 	  boid.mesh.posittion = boid.mesh.position.add(boid.velocity)
 	})
 }
