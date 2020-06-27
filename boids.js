@@ -25,13 +25,15 @@ var Boid = function () {
 // TODO COMBINE LOOOOOOOOOPS
 
 function calculateCenter(boid, boids) {
+	// calculate the perceived center position for a given
+	// boid included in a group of boids
 	var c = new THREE.Vector3();
 	boids.forEach(function(currentBoid, index) {
 		if (currentBoid !== boid) {
 			c.add(currentBoid.mesh.position);
 		}
 	})
-	c = c.divideScalar(boids.length)
+	c.divideScalar(boids.length - 1)
 	return c
 }
 
@@ -50,12 +52,26 @@ function dontCollide(boid, boids) {
 	return c
 }
 
+function matchVelocity(boid, boids) {
+	var pv = new THREE.Vector3()
+
+	boids.forEach(function(currentBoid, index) {
+		if (currentBoid !== boid) {
+			pv = pv.add(currentBoid.velocity)
+			}
+		}
+	)
+		pv.divideScalar(boids.length - 1)
+		pv.sub(boid.velocity)
+		pv.divideScalar(8)
+		return pv
+}
+
 function drawBoid() {
 	var boid = new Boid()
 	boid.mesh.position.x = Math.random() * width - width/2;
 	boid.mesh.position.y = Math.random() * height - height/2;
-	boid.mesh.position.z = Math.random() * depth - depth/2;
-	scene.add(boid.mesh);
+	boid.mesh.position.z = Math.random() * depth - depth/2; scene.add(boid.mesh);
 	boids.push(boid)
 }
 
@@ -76,8 +92,10 @@ function move() {
 	boids.forEach(function(boid, index) {
 		v1 = flyTowardsCentre(boid, boids)
 		v2 = dontCollide(boid, boids)
+		v3 = matchVelocity(boid, boids)
 		boid.velocity = boid.velocity.add(v1)
 		boid.velocity = boid.velocity.add(v2)
+		boid.velocity = boid.velocity.add(v3)
 	  boid.mesh.posittion = boid.mesh.position.add(boid.velocity)
 	})
 }
