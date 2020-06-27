@@ -1,47 +1,54 @@
-var _boids = [];
-var _numBoids = 100;
-var _scene = new THREE.Scene();
-var _camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-var _renderer = new THREE.WebGLRenderer();
-_renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(_renderer.domElement);
-_camera.position.z = 500;
+var height = 500;
+var width = 500
+var depth = 200
+var maxSpeed = 4;
+
+var boids = [];
+var numBoids = 100;
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+var renderer = new THREE.WebGLRenderer();
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+camera.position.z = 350;
+
+var Boid = function () {
+	this.position = new THREE.Vector3();
+	this.velocity = new THREE.Vector3();
+	this.acceleration = new THREE.Vector3();
+}
 
 function drawBoid() {
 	var geometry = new THREE.ConeGeometry(1, 4, 5.3);
 	var material = new THREE.MeshBasicMaterial({color: 0xffff00});
 	var boid = new THREE.Mesh(geometry,  material);
-	boid.position.x = Math.random() * 500 - 250;
-	boid.position.y = Math.random() * 500 - 250;
-	boid.position.z = Math.random() * 500 - 250;
-	// boid.velocity.x = Math.random() * 2 - 1;
-	// boid.velocity.y = Math.random() * 2 - 1;
-	// boid.velocity.z = Math.random() * 2 - 1;
-	_scene.add(boid);
-	_boids.push(boid)
+	boid.position.x = Math.random() * width - width/2;
+	boid.position.y = Math.random() * height - height/2;
+	boid.position.z = Math.random() * depth - depth/2;
+	scene.add(boid);
+	boids.push(boid)
 }
 
 
-function move() {
-	_boids.forEach(function(boid, index) {
-		boid.position.x += 0.1
-		boid.position.y += 0.1
-
-	})
-
-}
-
-function animate() {
-	requestAnimationFrame(animate);
-	_renderer.render(_scene, _camera);
-	move()
-}
-
-function drawAll() {
-	for(var i = 0; i < _numBoids; i ++){
+function drawBoids() {
+	for(var i = 0; i < numBoids; i ++){
 		drawBoid()
 	}
 }
 
-drawAll()
+function move() {
+	boids.forEach(function(boid, index) {
+		boid.position.x += 0.1
+		boid.position.y += 0.1
+	})
+}
+
+function animate() {
+	requestAnimationFrame(animate);
+	renderer.render(scene, camera);
+	move()
+}
+
+drawBoids()
 animate();
