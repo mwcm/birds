@@ -22,16 +22,25 @@ var Boid = function () {
 	this.acceleration = new THREE.Vector3();
 }
 
+// TODO COMBINE LOOOOOOOOOPS
+
 function calculateCenter(boid, boids) {
 	var c = new THREE.Vector3();
-	for (var i = 0; i < numBoids; i++){
-		c.add(boids[i].mesh.position);
-	}
-	// assuming supplied boid is part of the boids group
-	c = c.sub(boid.mesh.position)
+	boids.forEach(function(currentBoid, index) {
+		if (currentBoid != boid) {
+			c.add(currentBoid.mesh.position);
+		}
+	})
 	c = c.divideScalar(boids.length)
-	console.log(c)
 	return c
+}
+
+
+function dontCollide(boid, boids) {
+	var c = new THREE.Vector3()
+	boids.forEach(function(currentBoid, index) {
+		if ()
+	})
 }
 
 function drawBoid() {
