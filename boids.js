@@ -1,7 +1,7 @@
 var height = 400;
 var width = 300;
 var depth = 800;
-var maxSpeed = 10;
+var maxSpeed = 5;
 
 var xMin = -width;
 var yMin = -width;
