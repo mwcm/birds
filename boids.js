@@ -134,9 +134,13 @@ function drawBoids() {
 
 function move() {
   boids.forEach(function (boid, index) {
+
+    // need to calculate n closest boids
+    // should only input n closest boids below
     v1 = flyTowardsCentre(boid, boids);
     v2 = dontCollide(boid, boids);
     v3 = matchVelocity(boid, boids);
+
     v4 = boundPositions(boid);
     boid.velocity.add(v1);
     boid.velocity.add(v2);
