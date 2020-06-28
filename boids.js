@@ -1,7 +1,15 @@
-var height = 500;
-var width = 500
-var depth = 200
+var height = 400;
+var width = 400;
+var depth = 200;
 var maxSpeed = 4;
+
+var xMin = 0;
+var yMin = 0;
+var zMin = 0;
+
+var xMax = width;
+var yMax = height;
+var zMax = depth;
 
 var boids = [];
 var numBoids = 100;
@@ -11,15 +19,37 @@ var renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-camera.position.z = 350;
+camera.position.z = 1000;
+
+function boundPositions(b) {
+	var v = new THREE.Vector3();
+
+	if (b.mesh.position.x < xMin) {
+		v.x = 4
+	} else if (b.mesh.position.x > xMax) {
+		v.x = -4
+	}
+
+	if (b.mesh.position.y < yMin) {
+		v.y = 4
+	} else if (b.mesh.position.y > yMax) {
+		v.y = -4
+	}
+
+	if (b.mesh.position.z < zMin) {
+		v.z = 4
+	} else if (b.mesh.position.z > zMax) {
+		v.z = -4
+	}
+	return v
+}
 
 var Boid = function () {
-	this.geometry = new THREE.ConeGeometry(1, 4, 5.3);
-	this.material = new THREE.MeshBasicMaterial({color: 0xffff00});
-	this.mesh = new THREE.Mesh(this.geometry,  this.material);
-
-	this.velocity = new THREE.Vector3();
+	this.velocity     = new THREE.Vector3();
 	this.acceleration = new THREE.Vector3();
+	this.geometry     = new THREE.ConeGeometry(1, 4, 5.3);
+	this.material     = new THREE.MeshBasicMaterial({color: 0xffff00});
+	this.mesh         = new THREE.Mesh(this.geometry,  this.material);
 }
 
 // TODO COMBINE LOOOOOOOOOPS
@@ -43,7 +73,8 @@ function dontCollide(boid, boids) {
 	var d = new THREE.Vector3()
 	boids.forEach(function(currentBoid, index) {
 		if (currentBoid !== boid) {
-			if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 16) {  // should be based on boid geometry size
+			// should be based on boid geometry size, not just set at 16
+			if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 16) {
 				d.subVectors(currentBoid.mesh.position, boid.mesh.position)
 				c.sub(d)
 			}
@@ -71,7 +102,8 @@ function drawBoid() {
 	var boid = new Boid()
 	boid.mesh.position.x = Math.random() * width - width/2;
 	boid.mesh.position.y = Math.random() * height - height/2;
-	boid.mesh.position.z = Math.random() * depth - depth/2; scene.add(boid.mesh);
+	boid.mesh.position.z = Math.random() * depth - depth/2;
+	scene.add(boid.mesh);
 	boids.push(boid)
 }
 
@@ -93,9 +125,11 @@ function move() {
 		v1 = flyTowardsCentre(boid, boids)
 		v2 = dontCollide(boid, boids)
 		v3 = matchVelocity(boid, boids)
+		v4 = boundPositions(boid)
 		boid.velocity = boid.velocity.add(v1)
 		boid.velocity = boid.velocity.add(v2)
 		boid.velocity = boid.velocity.add(v3)
+		boid.velocity = boid.velocity.add(v4)
 	  boid.mesh.posittion = boid.mesh.position.add(boid.velocity)
 	})
 }
