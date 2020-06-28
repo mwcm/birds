@@ -14,6 +14,8 @@ var zMax = depth;
 var boids = [];
 var numBoids = 100;
 var scene = new THREE.Scene();
+
+scene.background = new THREE.Color(0x87CEEB)
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 var renderer = new THREE.WebGLRenderer();
 
@@ -25,7 +27,7 @@ var Boid = function () {
   this.velocity     = new THREE.Vector3();
   this.acceleration = new THREE.Vector3();
   this.geometry     = new THREE.ConeGeometry(1, 4, 5.3);
-  this.material     = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+  this.material     = new THREE.MeshBasicMaterial({ color: 0x000000 });
   this.mesh         = new THREE.Mesh(this.geometry, this.material);
 };
 
