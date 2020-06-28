@@ -1,10 +1,10 @@
 var height = 400;
-var width = 600;
-var depth = 200;
+var width = 300;
+var depth = 800;
 var maxSpeed = 10;
 
 var xMin = -width;
-var yMin = 0;
+var yMin = -width;
 var zMin = 0;
 
 var xMax = width;
