@@ -12,8 +12,8 @@ var yMax = height;
 var zMax = depth;
 
 var boids = [];
-var numBoids = 100;
-var groupRadius = 100;
+var numBoids = 400;
+var groupRadius = 50;
 var scene = new THREE.Scene();
 
 scene.background = new THREE.Color(0x87CEEB)
@@ -88,6 +88,7 @@ function limitVelocity(b) {
   }
 }
 
+
 function boundPositions(b) {
   var v = new THREE.Vector3();
 
@@ -120,9 +121,9 @@ function flyTowardsCentre(boid, boids) {
 
 function drawBoid() {
   var boid = new Boid();
-  boid.mesh.position.x = Math.floor(Math.random() * xMax) - width/2;
-  boid.mesh.position.y = Math.floor(Math.random() * yMax) - height/2;
-  boid.mesh.position.z = Math.floor(Math.random() * zMax) - depth/2;
+  boid.mesh.position.x = Math.floor(Math.random() * width) - width/2;
+  boid.mesh.position.y = Math.floor(Math.random() * height) - height/2;
+  boid.mesh.position.z = Math.floor(Math.random() * depth) - depth/2;
   // rotate geometry so cone points in .lookAt() direction
   boid.geometry.applyMatrix4( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
   scene.add(boid.mesh);
@@ -140,14 +141,12 @@ function getBoidsWithinRadius(boid, allBoids, radius) {
 
   allBoids.forEach(function (currentBoid, index) {
 
-    distance = boid.mesh.position.distanceTo(currentBoid.mesh.position);
-    if (distance > 0 && distance <= radius) {
-      boidsWithinRadius.push(currentBoid)
-    }
-
+      distance = boid.mesh.position.distanceTo(currentBoid.mesh.position);
+      if (distance <= radius) {
+        boidsWithinRadius.push(currentBoid)
+      }
   });
   return boidsWithinRadius
-
 }
 
 function move() {
@@ -165,7 +164,7 @@ function move() {
     boid.velocity.add(v1);
     boid.velocity.add(v2);
     boid.velocity.add(v3);
-    boid.velocity.add(v4.divideScalar(0.00001));
+    boid.velocity.add(v4.divideScalar(0.01));
 
 
     var t = new THREE.Vector3();
