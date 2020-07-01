@@ -1,11 +1,11 @@
 var height = 400;
 var width = 300;
 var depth = 800;
-var maxSpeed = 5;
+var maxSpeed = 1;
 
 var xMin = -width;
 var yMin = -width;
-var zMin = 0;
+var zMin = 700;
 
 var xMax = width;
 var yMax = height;
@@ -21,7 +21,7 @@ var renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-camera.position.z = 1000;
+camera.position.z = 500;
 
 var Boid = function () {
   this.velocity     = new THREE.Vector3();
@@ -122,6 +122,8 @@ function drawBoid() {
   boid.mesh.position.x = Math.random() * width - width / 2;
   boid.mesh.position.y = Math.random() * height - height / 2;
   boid.mesh.position.z = Math.random() * depth - depth / 2;
+
+  boid.geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
   scene.add(boid.mesh);
   boids.push(boid);
 }
@@ -147,6 +149,11 @@ function move() {
     boid.velocity.add(v3);
     boid.velocity.add(v4);
     limitVelocity(boid)
+
+    var pos = new THREE.Vector3()
+    pos.addVectors(boid.velocity, boid.mesh.position)
+    boid.mesh.lookAt(pos)
+
     boid.mesh.position.add(boid.velocity);
   });
 }
