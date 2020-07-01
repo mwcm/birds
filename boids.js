@@ -1,11 +1,11 @@
 var height = 400;
-var width = 300;
-var depth = 800;
-var maxSpeed = 1;
+var width = 400;
+var depth = 200;
+var maxSpeed = 4;
 
 var xMin = -width;
-var yMin = -width;
-var zMin = 700;
+var yMin = -height;
+var zMin = -depth;
 
 var xMax = width;
 var yMax = height;
@@ -13,6 +13,7 @@ var zMax = depth;
 
 var boids = [];
 var numBoids = 100;
+var groupRadius = 100;
 var scene = new THREE.Scene();
 
 scene.background = new THREE.Color(0x87CEEB)
@@ -21,7 +22,7 @@ var renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-camera.position.z = 500;
+camera.position.z = 475;
 
 var Boid = function () {
   this.velocity     = new THREE.Vector3();
@@ -51,7 +52,7 @@ function dontCollide(boid, boids) {
   boids.forEach(function (currentBoid, index) {
     if (currentBoid !== boid) {
       // should be based on boid geometry size, not just set at 16
-      if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 16) {
+      if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 8) {
         d.subVectors(currentBoid.mesh.position, boid.mesh.position);
         c.sub(d);
       }
@@ -90,22 +91,22 @@ function limitVelocity(b) {
 function boundPositions(b) {
   var v = new THREE.Vector3();
 
-  if (b.mesh.position.x < xMin) {
-    v.x = 4;
-  } else if (b.mesh.position.x > xMax) {
-    v.x = -4;
+  if (b.mesh.position.x < xMin + 50) {
+    v.x = 10;
+  } else if (b.mesh.position.x > xMax - 50) {
+    v.x = -10;
   }
 
-  if (b.mesh.position.y < yMin) {
-    v.y = 4;
-  } else if (b.mesh.position.y > yMax) {
-    v.y = -4;
+  if (b.mesh.position.y < yMin + 50) {
+    v.y = 10;
+  } else if (b.mesh.position.y > yMax - 50) {
+    v.y = -10;
   }
 
-  if (b.mesh.position.z < zMin) {
-    v.z = 4;
-  } else if (b.mesh.position.z > zMax) {
-    v.z = -4;
+  if (b.mesh.position.z < zMin + 50) {
+    v.z = 10;
+  } else if (b.mesh.position.z > zMax - 50) {
+    v.z = -10;
   }
   return v;
 }
@@ -119,11 +120,11 @@ function flyTowardsCentre(boid, boids) {
 
 function drawBoid() {
   var boid = new Boid();
-  boid.mesh.position.x = Math.random() * width - width / 2;
-  boid.mesh.position.y = Math.random() * height - height / 2;
-  boid.mesh.position.z = Math.random() * depth - depth / 2;
-
-  boid.geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
+  boid.mesh.position.x = Math.floor(Math.random() * xMax) - width/2;
+  boid.mesh.position.y = Math.floor(Math.random() * yMax) - height/2;
+  boid.mesh.position.z = Math.floor(Math.random() * zMax) - depth/2;
+  // rotate geometry so cone points in .lookAt() direction
+  boid.geometry.applyMatrix4( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
   scene.add(boid.mesh);
   boids.push(boid);
 }
@@ -134,21 +135,43 @@ function drawBoids() {
   }
 }
 
+function getBoidsWithinRadius(boid, allBoids, radius) {
+  var boidsWithinRadius = [];
+
+  allBoids.forEach(function (currentBoid, index) {
+
+    distance = boid.mesh.position.distanceTo(currentBoid.mesh.position);
+    if (distance > 0 && distance <= radius) {
+      boidsWithinRadius.push(currentBoid)
+    }
+
+  });
+  return boidsWithinRadius
+
+}
+
 function move() {
   boids.forEach(function (boid, index) {
 
+    var boidsInGroup = getBoidsWithinRadius(boid, boids, groupRadius)
+
     // need to calculate n closest boids
     // should only input n closest boids below
-    v1 = flyTowardsCentre(boid, boids);
-    v2 = dontCollide(boid, boids);
-    v3 = matchVelocity(boid, boids);
+    v1 = flyTowardsCentre(boid, boidsInGroup);
+    v2 = dontCollide(boid, boidsInGroup);
+    v3 = matchVelocity(boid, boidsInGroup);
 
     v4 = boundPositions(boid);
     boid.velocity.add(v1);
     boid.velocity.add(v2);
     boid.velocity.add(v3);
-    boid.velocity.add(v4);
-    limitVelocity(boid)
+    boid.velocity.add(v4.divideScalar(0.00001));
+
+
+    var t = new THREE.Vector3();
+    if (v4 != t){
+      limitVelocity(boid)
+    }
 
     var pos = new THREE.Vector3()
     pos.addVectors(boid.velocity, boid.mesh.position)
