@@ -1,6 +1,6 @@
 var height = 400;
 var width = 400;
-var depth = 200;
+var depth = 400;
 var maxSpeed = 4;
 
 var xMin = -width;
@@ -12,7 +12,7 @@ var yMax = height;
 var zMax = depth;
 
 var boids = [];
-var numBoids = 400;
+var numBoids = 500;
 var groupRadius = 50;
 var scene = new THREE.Scene();
 
@@ -146,7 +146,8 @@ function getBoidsWithinRadius(boid, allBoids, radius) {
         boidsWithinRadius.push(currentBoid)
       }
   });
-  return boidsWithinRadius
+
+  return boidsWithinRadius;
 }
 
 function move() {
