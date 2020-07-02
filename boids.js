@@ -153,9 +153,7 @@ function move() {
   boids.forEach(function (boid, index) {
 
     var boidsInGroup = getBoidsWithinRadius(boid, boids, groupRadius)
-
-    // need to calculate n closest boids
-    // should only input n closest boids below
+    
     v1 = flyTowardsCentre(boid, boidsInGroup);
     v2 = dontCollide(boid, boidsInGroup);
     v3 = matchVelocity(boid, boidsInGroup);
