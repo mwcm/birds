@@ -62,7 +62,6 @@ function dontCollide(boid, boids) {
 
 function matchVelocity(boid, boids) {
   var pv = new THREE.Vector3();
-
   boids.forEach(function (currentBoid, index) {
     if (currentBoid !== boid) {
       pv = pv.add(currentBoid.velocity);
@@ -137,15 +136,12 @@ function drawBoids() {
 
 function getBoidsWithinRadius(boid, allBoids, radius) {
   var boidsWithinRadius = [];
-
   allBoids.forEach(function (currentBoid, index) {
-
       distance = boid.mesh.position.distanceTo(currentBoid.mesh.position);
       if (distance <= radius) {
         boidsWithinRadius.push(currentBoid)
       }
   });
-
   return boidsWithinRadius;
 }
 
@@ -164,17 +160,17 @@ function move() {
     boid.velocity.add(v3);
     boid.velocity.add(v4.divideScalar(0.001));
 
-
+    // only limit velocity when boid is within boundPositions()'s bounded space, 
+    // don't want to limit boid velocity when it is offscreen 
     var t = new THREE.Vector3();
     if (v4 != t){
       limitVelocity(boid)
     }
 
     var pos = new THREE.Vector3()
-    pos.addVectors(boid.velocity, boid.mesh.position)
-    boid.mesh.lookAt(pos)
-
-    boid.mesh.position.add(boid.velocity);
+    pos.addVectors(boid.velocity, boid.mesh.position)  // calculate next position
+    boid.mesh.lookAt(pos)  // "look" (point cone tip) in direction the bird is flying
+    boid.mesh.position.add(boid.velocity);  // move boid
   });
 }
 
