@@ -1,7 +1,7 @@
 var height = 400;
 var width = 400;
 var depth = 400;
-var maxSpeed = 4;
+var maxSpeed = 3;
 
 var xMin = -width;
 var yMin = -height;
@@ -51,8 +51,7 @@ function dontCollide(boid, boids) {
   var d = new THREE.Vector3();
   boids.forEach(function (currentBoid, index) {
     if (currentBoid !== boid) {
-      // should be based on boid geometry size, not just set at 16
-      if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 8) {
+      if (currentBoid.mesh.position.distanceTo(boid.mesh.position) < 10) {
         d.subVectors(currentBoid.mesh.position, boid.mesh.position);
         c.sub(d);
       }
@@ -115,7 +114,7 @@ function boundPositions(b) {
 function flyTowardsCentre(boid, boids) {
   boidCenter = calculateCenter(boid, boids);
   boidCenter = boidCenter.sub(boid.mesh.position);
-  boidCenter = boidCenter.divideScalar(100); // move 1% distance to center
+  boidCenter = boidCenter.divideScalar(200); // move 0.5% distance to center
   return boidCenter;
 }
 
@@ -165,7 +164,7 @@ function move() {
     boid.velocity.add(v1);
     boid.velocity.add(v2);
     boid.velocity.add(v3);
-    boid.velocity.add(v4.divideScalar(0.01));
+    boid.velocity.add(v4.divideScalar(0.001));
 
 
     var t = new THREE.Vector3();
